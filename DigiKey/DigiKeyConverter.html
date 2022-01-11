@@ -1,0 +1,55 @@
+<html>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(function () {
+            $('#input_value').on('change keyup', function () {
+                try {
+                    const lines = $(this).val().split('\n')
+                        .filter(function (v) {
+                            return v;
+                        })
+                        .map(function (v) {
+                            const columns = v.split('\t');
+                            const price = columns[1].replace(/0+?$/, '').replace(/\.$/, '').replace(/¥/, '');
+                            return columns[0].replace(',', '') + '個: ' + price + '円';
+                        });
+
+                    const text = lines.join('\n');
+                    $('#output_value').val(text).focus();
+                    navigator.clipboard.writeText(text).then(function() {});
+                } catch (e) {
+                    console.error(e)
+                }
+            }).trigger('change');
+        });
+    </script>
+    <style>
+        #container {
+            display: flex;
+            height: 100%;
+            justify-content: center;
+        }
+
+        #container > * {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        #container textarea {
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+    <div class="box-left">
+        <label for="input_value">入力</label><textarea id="input_value"></textarea>
+    </div>
+    <div class="box-right">
+        <label for="output_value">出力</label><textarea id="output_value"></textarea>
+    </div>
+</div>
+</body>
+</html>
