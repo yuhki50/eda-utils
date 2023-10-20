@@ -1,23 +1,43 @@
 <html>
 <head>
+    <meta charset="UTF-8">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script>
         $(function () {
             $('#input_value').on('change keyup', function () {
                 try {
-                    const lines = $(this).val().split('\n')
-                        .filter(function (v) {
-                            return v;
-                        })
-                        .map(function (v) {
-                            const columns = v.split('\t');
-                            const price = columns[1].replace(/0+?$/, '').replace(/\.$/, '').replace(/¥/, '');
-                            return columns[0].replace(',', '') + '個: ' + price + '円';
-                        });
+                    const normalizePrice = value => Number(value.replace(',', ''));
+                    const lines = $(this).val()
+                        .trim()
+                        .split('\n')
+                        .reduce((items, line, i) => {
+                            if (i % 2 === 0) {
+                                // 数量行
+                                items.push({
+                                    amount: Number(line.trim()),
+                                })
+                            } else {
+                                // 金額行
+                                const index = Math.floor(i / 2);
+                                const prices = line.match(/¥(.+)\t¥(.+)/)
+                                console.log(prices);
+
+                                if (prices) {
+                                    items[index].price = {
+                                        unit: normalizePrice(prices[1]),
+                                        total: normalizePrice(prices[2]),
+                                    };
+                                }
+                            }
+
+                            return items;
+                        }, [])
+                        .map(v => `${v.amount}個: ${v.price.unit}円`);
 
                     const text = lines.join('\n');
                     $('#output_value').val(text).focus();
-                    navigator.clipboard.writeText(text).then(function() {});
+                    navigator.clipboard.writeText(text).then(() => {
+                    });
                 } catch (e) {
                     console.error(e)
                 }
@@ -45,7 +65,14 @@
 <body>
 <div id="container">
     <div class="box-left">
-        <label for="input_value">入力</label><textarea id="input_value"></textarea>
+        <label for="input_value">入力</label><textarea id="input_value">
+50
+¥1,714.22000	¥85,711
+100
+¥1,703.15000	¥170,315
+200
+¥1,688.91000	¥337,782
+    </textarea>
     </div>
     <div class="box-right">
         <label for="output_value">出力</label><textarea id="output_value"></textarea>
