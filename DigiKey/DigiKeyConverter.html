@@ -6,7 +6,6 @@
         $(function () {
             $('#input_value').on('change keyup', function () {
                 try {
-                    const normalizePrice = value => Number(value.replace(',', ''));
                     const lines = $(this).val()
                         .trim()
                         .split('\n')
@@ -24,8 +23,7 @@
 
                                 if (prices) {
                                     items[index].price = {
-                                        unit: normalizePrice(prices[1]),
-                                        total: normalizePrice(prices[2]),
+                                        unit: Number(prices[1].replace(',', '')),
                                     };
                                 }
                             }
