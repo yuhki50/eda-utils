@@ -14,12 +14,12 @@
                             if (i % 2 === 0) {
                                 // 数量行
                                 items.push({
-                                    amount: Number(line.trim()),
+                                    amount: Number(line.replace(',', '').trim()),
                                 })
                             } else {
                                 // 金額行
                                 const index = Math.floor(i / 2);
-                                const prices = line.match(/¥(.+)\t¥(.+)/)
+                                const prices = line.replace(',', '').match(/¥(.+)\t¥(.+)/)
                                 console.log(prices);
 
                                 if (prices) {
